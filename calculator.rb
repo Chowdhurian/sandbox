@@ -13,6 +13,10 @@ class Calculator
   def subtract(a, b)
     a - b
   end
-end
 
-# method 2:
+# multiply a number by Math.PI, round the result to 2 decimal points
+  def multiply(a)
+    result = a * PI
+    puts "$#{result.round(2)}"
+  end
+end
