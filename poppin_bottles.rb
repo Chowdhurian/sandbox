@@ -22,30 +22,40 @@ REDEEM_EMPTIES_PER_FULL = 2
 
 def buy(spend_amount)
   puts "You want to spend $#{spend_amount}."
+  
   new_bottles = spend_amount.to_i / FULL_COST
   @bottle_fulls += new_bottles
   @bottle_purchased += new_bottles
+  
   puts "For that you get just #{@bottle_fulls} bottles of pop."
 end
 
 def drink
   puts "You just drank #{@bottle_fulls} bottles of pop...have you heard of corn syrup?"
-  @bottle_empties = @bottle_fulls
-  @bottle_caps = @bottle_fulls
+  
+  @bottle_empties += @bottle_fulls
+  @bottle_caps += @bottle_fulls
   @bottle_fulls = 0
 end
 
 def recycle_caps
   puts "When recycling #{@bottle_caps} caps..."
-  new_bottles, @bottle_caps = @bottle_caps.divmod(REDEEM_CAPS_PER_FULL)
+
+  new_bottles = @bottle_caps / REDEEM_CAPS_PER_FULL 
+  @bottle_caps = @bottle_caps % REDEEM_CAPS_PER_FULL
+
   @bottle_fulls += new_bottles
   @bottle_caps_recycling += new_bottles
+  
   puts "...you get #{new_bottles} new bottles of pop."
 end
 
 def recycle_bottles
   puts "When recycling #{@bottle_empties} empties..."
-  new_bottles, @bottle_empties = @bottle_empties.divmod(REDEEM_EMPTIES_PER_FULL)
+  
+  new_bottles = @bottle_empties / REDEEM_EMPTIES_PER_FULL 
+  @bottle_empties = @bottle_empties % REDEEM_EMPTIES_PER_FULL
+
   @bottle_fulls += new_bottles
   @bottle_empties_recycling += new_bottles
   puts "...you get #{new_bottles} new bottles of pop."
@@ -68,15 +78,17 @@ def repl
     else
       buy(user_choice)
       
-      while @bottle_fulls >= 2 || @bottle_caps >= 4 || @bottle_empties >= 2
+      drink
+      
+      while @bottle_caps >= REDEEM_CAPS_PER_FULL || @bottle_empties >= REDEEM_EMPTIES_PER_FULL
         puts "Pop isn't for the faint of heart, kid..."
-        
-        drink
 
         recycle_caps
 
         recycle_bottles
         
+        drink
+
         puts "You have remaining:\n #{@bottle_fulls} new bottles" \
           "\n #{@bottle_empties} empty bottles\n #{@bottle_caps} caps"
       end
@@ -87,8 +99,15 @@ def repl
       "\n and got #{@bottle_caps_recycling} recycling caps" \
       "\n Total: #{total_bottles} bottles"
 
+    @bottle_fulls = 0
+    @bottle_empties = 0
+    @bottle_caps = 0
+    @bottle_purchased = 0
+    @bottle_empties_recycling = 0
+    @bottle_caps_recycling = 0
+    
   end
-  
+
 end
 
 # TEST CODE
