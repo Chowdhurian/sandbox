@@ -15,10 +15,16 @@ REDEEM_EMPTIES_PER_FULL = 2
 @bottle_fulls = 0
 @bottle_empties = 0
 @bottle_caps = 0
+@bottle_purchased = 0
+@bottle_empties_recycling = 0
+@bottle_caps_recycling = 0
+
 
 def buy(spend_amount)
   puts "You want to spend $#{spend_amount}."
-  @bottle_fulls = spend_amount.to_i / FULL_COST
+  new_bottles = spend_amount.to_i / FULL_COST
+  @bottle_fulls += new_bottles
+  @bottle_purchased += new_bottles
   puts "For that you get just #{@bottle_fulls} bottles of pop."
 end
 
@@ -33,6 +39,7 @@ def recycle_caps
   puts "When recycling #{@bottle_caps} caps..."
   new_bottles, @bottle_caps = @bottle_caps.divmod(REDEEM_CAPS_PER_FULL)
   @bottle_fulls += new_bottles
+  @bottle_caps_recycling += new_bottles
   puts "...you get #{new_bottles} new bottles of pop."
 end
 
@@ -40,7 +47,12 @@ def recycle_bottles
   puts "When recycling #{@bottle_empties} empties..."
   new_bottles, @bottle_empties = @bottle_empties.divmod(REDEEM_EMPTIES_PER_FULL)
   @bottle_fulls += new_bottles
+  @bottle_empties_recycling += new_bottles
   puts "...you get #{new_bottles} new bottles of pop."
+end
+
+def total_bottles
+  @bottle_purchased + @bottle_empties_recycling + @bottle_caps_recycling
 end
 
 def repl
@@ -51,8 +63,8 @@ def repl
     puts "Enter the amount you'll spend or \n type 'quit' to leave the Pop business."
     user_choice = gets.chomp
     
-    if user_choice == 'quit'
-      break
+    if user_choice.downcase == 'quit'
+      exit
     else
       buy(user_choice)
       
@@ -65,10 +77,15 @@ def repl
 
         recycle_bottles
         
-        puts "You have in hand:\n #{@bottle_fulls} new bottles" \
+        puts "You have remaining:\n #{@bottle_fulls} new bottles" \
           "\n #{@bottle_empties} empty bottles\n #{@bottle_caps} caps"
       end
     end
+
+    puts "You: \n bought #{@bottle_purchased} new bottles" \
+      "\n got #{@bottle_empties_recycling} recycling empty bottles" \
+      "\n and got #{@bottle_caps_recycling} recycling caps" \
+      "\n Total: #{total_bottles} bottles"
 
   end
   
@@ -77,3 +94,7 @@ end
 # TEST CODE
 
 puts repl
+
+# i get 35 bottles for 20$
+# 95 for $50
+# 1995 for $1000
